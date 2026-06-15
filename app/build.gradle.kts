@@ -66,6 +66,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
 
-    // Card Slider Indicator
-    implementation("com.tbuonomo:dotsindicator:5.0")
+
 }

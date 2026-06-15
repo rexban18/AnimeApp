@@ -35,14 +35,11 @@
                     android:padding="16dp"
                     android:orientation="vertical">
 
-                    <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+                    <LinearLayout
                         android:id="@+id/bannerDots"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:dotsColor="@android:color/darker_gray"
-                        app:dotsSelectedColor="@android:color/white"
-                        app:dotsSize="8dp"
-                        app:dotsSpacing="4dp" />
+                        android:orientation="horizontal" />
                 </LinearLayout>
             </FrameLayout>
 
