@@ -17,7 +17,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".ui.home.HomeActivity"
+            android:name=".ui.splash.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.AnimeApp">
             <intent-filter>
@@ -25,6 +25,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:theme="@style/Theme.AnimeApp" />
 
         <activity
             android:name=".ui.detail.DetailActivity"
@@ -35,6 +39,10 @@
             android:name=".ui.player.PlayerActivity"
             android:theme="@style/Theme.AnimeApp"
             android:configChanges="orientation|screenSize|keyboardHidden" />
+
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:theme="@style/Theme.AnimeApp" />
 
     </application>
 </manifest>

@@ -54,23 +54,27 @@ class DetailActivity : AppCompatActivity() {
                     binding.titleText.text = anime.title
 
                     // Genre tags
+                    binding.genreContainer.removeAllViews()
                     anime.genre?.split(",")?.forEach { genre ->
-                        val chip = layoutInflater.inflate(
-                            com.google.android.material.R.layout.support_simple_spinner_dropdown_item,
-                            binding.genreContainer,
-                            false
-                        ) as android.widget.TextView
-                        chip.text = genre.trim()
-                        chip.setTextColor(android.graphics.Color.GRAY)
-                        chip.textSize = 10f
-                        chip.setTypeface(null, android.graphics.Typeface.BOLD)
-                        binding.genreContainer.addView(chip)
+                        val tag = android.widget.TextView(this@DetailActivity).apply {
+                            text = genre.trim()
+                            setTextColor(android.graphics.Color.GRAY)
+                            textSize = 10f
+                            setTypeface(null, android.graphics.Typeface.BOLD)
+                        }
+                        binding.genreContainer.addView(tag)
+                        val dot = android.widget.TextView(this@DetailActivity).apply {
+                            text = " \u2022 "
+                            setTextColor(android.graphics.Color.parseColor("#CCCCCC"))
+                            textSize = 10f
+                        }
+                        binding.genreContainer.addView(dot)
                     }
 
                     binding.episodeCountText.text = "${anime.episode_count ?: 0} Episodes"
                     binding.ratingText.text = "Score: ${anime.rating ?: "N/A"}"
                     binding.descriptionText.text = anime.description ?: "No description available."
-                    binding.typeText.text = anime.type?.replaceFirstChar { it.uppercase() } ?: "Anime"
+                    binding.typeText.text = anime.type?.capitalize() ?: "Anime"
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

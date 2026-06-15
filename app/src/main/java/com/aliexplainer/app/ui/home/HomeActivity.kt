@@ -1,7 +1,6 @@
 package com.aliexplainer.app.ui.home
 
 import android.content.Intent
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,6 +15,7 @@ import com.aliexplainer.app.data.model.Anime
 import com.aliexplainer.app.data.repository.AnimeRepository
 import com.aliexplainer.app.databinding.ActivityHomeBinding
 import com.aliexplainer.app.ui.detail.DetailActivity
+import com.aliexplainer.app.ui.settings.SettingsActivity
 import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity() {
@@ -28,7 +28,6 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var animeAdapter: AnimeAdapter
 
     private val banners = mutableListOf<Anime>()
-    private val recommendedList = mutableListOf<Anime>()
     private val animeList = mutableListOf<Anime>()
 
     private var bannerAutoSlider: Handler? = null
@@ -38,6 +37,10 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.settingsButton.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
 
         setupBannerSlider()
         setupRecommendedList()
@@ -61,10 +64,11 @@ class HomeActivity : AppCompatActivity() {
 
         bannerAutoSlider = Handler(Looper.getMainLooper())
         bannerSliderRunnable = Runnable {
-            val currentItem = binding.bannerViewPager.currentItem
-            val nextItem = if (currentItem < banners.size - 1) currentItem + 1 else 0
-            binding.bannerViewPager.setCurrentItem(nextItem, true)
-            bannerAutoSlider?.postDelayed(bannerSliderRunnable!!, 4000)
+            if (banners.isNotEmpty()) {
+                val nextItem = (binding.bannerViewPager.currentItem + 1) % banners.size
+                binding.bannerViewPager.setCurrentItem(nextItem, true)
+                bannerAutoSlider?.postDelayed(bannerSliderRunnable!!, 4000)
+            }
         }
     }
 
@@ -72,12 +76,12 @@ class HomeActivity : AppCompatActivity() {
         binding.bannerDots.removeAllViews()
         for (i in 0 until count) {
             val dot = TextView(this)
-            val size = 24
-            val params = LinearLayout.LayoutParams(size, size)
-            params.setMargins(4, 0, 4, 0)
-            dot.layoutParams = params
-            dot.textSize = 10f
+            dot.layoutParams = LinearLayout.LayoutParams(36, 36).apply {
+                setMargins(4, 0, 4, 0)
+            }
+            dot.textSize = 14f
             dot.text = "\u2022"
+            dot.gravity = android.view.Gravity.CENTER
             dot.setTextColor(ContextCompat.getColor(this, android.R.color.darker_gray))
             binding.bannerDots.addView(dot)
         }
@@ -116,6 +120,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setupCategoryFilter() {
+        binding.filterAll.isChecked = true
         binding.filterAll.setOnClickListener { updateFilterSelection(binding.filterAll, null) }
         binding.filterDonghua.setOnClickListener { updateFilterSelection(binding.filterDonghua, "donghua") }
         binding.filterMovie.setOnClickListener { updateFilterSelection(binding.filterMovie, "movie") }
@@ -155,25 +160,19 @@ class HomeActivity : AppCompatActivity() {
                     val list = res.data
 
                     val recommended = list.filter { it.type == "donghua" }.take(10)
-                    recommendedList.clear()
-                    recommendedList.addAll(recommended)
-                    recommendedAdapter.submitList(recommendedList.toList())
+                    recommendedAdapter.submitList(recommended)
 
                     animeList.clear()
                     animeList.addAll(list)
-                    animeAdapter.submitList(animeList.toList())
+                    animeAdapter.submitList(animeList)
 
-                    updateVisibility()
+                    binding.noResultsText.visibility =
+                        if (animeList.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
-    }
-
-    private fun updateVisibility() {
-        binding.noResultsText.visibility =
-            if (animeList.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
     }
 
     private fun navigateToDetail(animeId: Int) {

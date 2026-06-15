@@ -1,30 +1,38 @@
 package com.aliexplainer.app.data.api
 
-import com.aliexplainer.app.utils.Constants
+import com.aliexplainer.app.utils.SettingsManager
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+    private var okHttpClient: OkHttpClient = createOkHttpClient()
+    private var retrofit: Retrofit = createRetrofit()
+    private var _apiService: ApiService = retrofit.create(ApiService::class.java)
+
+    val apiService: ApiService get() = _apiService
+
+    private fun createOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
     }
 
-    private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .build()
+    private fun createRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(SettingsManager.getBaseUrl())
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(Constants.BASE_URL)
-        .client(okHttpClient)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    val apiService: ApiService = retrofit.create(ApiService::class.java)
+    fun rebuildClient() {
+        okHttpClient = createOkHttpClient()
+        retrofit = createRetrofit()
+        _apiService = retrofit.create(ApiService::class.java)
+    }
 }
