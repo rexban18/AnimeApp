@@ -213,7 +213,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Your #1 destination for donghua & anime"
+                    android:text="Your #1 destination for donghua &amp; anime"
                     android:textColor="#888888"
                     android:textSize="11sp"
                     android:gravity="center" />
