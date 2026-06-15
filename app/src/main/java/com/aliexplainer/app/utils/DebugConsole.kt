@@ -51,7 +51,7 @@ object DebugConsole {
             ).apply {
                 gravity = Gravity.BOTTOM or Gravity.END
                 bottomMargin = 310
-                endMargin = 8
+                rightMargin = 8
             }
             text = "CONSOLE"
             textSize = 8f
