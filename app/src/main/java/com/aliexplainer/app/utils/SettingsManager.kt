@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 object SettingsManager {
     private const val PREFS_NAME = "ali_explainer_prefs"
     private const val KEY_BASE_URL = "base_url"
-    private const val DEFAULT_URL = "http://10.0.2.2:8080/"
+    private const val DEFAULT_URL = "https://explainerali.com/"
 
     private lateinit var prefs: SharedPreferences
 

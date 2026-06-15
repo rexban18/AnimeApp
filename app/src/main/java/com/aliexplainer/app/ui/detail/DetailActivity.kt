@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.aliexplainer.app.data.repository.AnimeRepository
 import com.aliexplainer.app.databinding.ActivityDetailBinding
 import com.aliexplainer.app.ui.player.PlayerActivity
+import com.aliexplainer.app.utils.DebugConsole
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
 
@@ -40,6 +41,7 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun loadAnimeDetail() {
+        DebugConsole.apiRequest("api_anime_detail.php?id=$animeId")
         lifecycleScope.launch {
             try {
                 val res = repository.getAnimeDetail(animeId)
@@ -75,8 +77,10 @@ class DetailActivity : AppCompatActivity() {
                     binding.ratingText.text = "Score: ${anime.rating ?: "N/A"}"
                     binding.descriptionText.text = anime.description ?: "No description available."
                     binding.typeText.text = anime.type?.capitalize() ?: "Anime"
+                    DebugConsole.apiSuccess("api_anime_detail.php?id=$animeId")
                 }
             } catch (e: Exception) {
+                DebugConsole.apiError("api_anime_detail.php?id=$animeId", e.message ?: "Unknown")
                 e.printStackTrace()
                 Toast.makeText(this@DetailActivity, "Failed to load details", Toast.LENGTH_SHORT).show()
             }

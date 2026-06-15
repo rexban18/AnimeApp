@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.aliexplainer.app.data.model.Episode
 import com.aliexplainer.app.data.repository.AnimeRepository
 import com.aliexplainer.app.databinding.ActivityPlayerBinding
+import com.aliexplainer.app.utils.DebugConsole
 import kotlinx.coroutines.launch
 
 @UnstableApi
@@ -55,17 +56,20 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun loadEpisodes() {
+        DebugConsole.apiRequest("api_episodes.php?anime_id=$animeId")
         lifecycleScope.launch {
             try {
                 val res = repository.getEpisodes(animeId)
                 if (res.success && res.data != null) {
                     episodes = res.data
                     episodeAdapter.submitList(episodes)
+                    DebugConsole.apiSuccess("api_episodes.php?anime_id=$animeId (${episodes.size} eps)")
                     if (episodes.isNotEmpty()) {
                         playEpisode(episodes.first())
                     }
                 }
             } catch (e: Exception) {
+                DebugConsole.apiError("api_episodes.php?anime_id=$animeId", e.message ?: "Unknown")
                 e.printStackTrace()
                 Toast.makeText(this@PlayerActivity, "Failed to load episodes", Toast.LENGTH_SHORT).show()
             }

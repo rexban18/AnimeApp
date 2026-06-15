@@ -11,11 +11,13 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.FrameLayout
 import com.aliexplainer.app.data.model.Anime
 import com.aliexplainer.app.data.repository.AnimeRepository
 import com.aliexplainer.app.databinding.ActivityHomeBinding
 import com.aliexplainer.app.ui.detail.DetailActivity
 import com.aliexplainer.app.ui.settings.SettingsActivity
+import com.aliexplainer.app.utils.DebugConsole
 import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity() {
@@ -41,6 +43,13 @@ class HomeActivity : AppCompatActivity() {
         binding.settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
+
+        // Debug console overlay
+        val rootParent = binding.root as? FrameLayout
+        if (rootParent != null) {
+            DebugConsole.show(this, rootParent)
+        }
+        DebugConsole.log("APP", "App started")
 
         setupBannerSlider()
         setupRecommendedList()
@@ -135,6 +144,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
+        DebugConsole.apiRequest("api_banner.php")
         lifecycleScope.launch {
             try {
                 val bannerRes = repository.getBanners()
@@ -143,16 +153,20 @@ class HomeActivity : AppCompatActivity() {
                     banners.addAll(bannerRes.data)
                     bannerAdapter.submitList(banners.toList())
                     setupDots(banners.size)
+                    DebugConsole.apiSuccess("api_banner.php (${banners.size} banners)")
                     bannerAutoSlider?.postDelayed(bannerSliderRunnable!!, 4000)
                 }
                 loadAnimeList(null)
             } catch (e: Exception) {
+                DebugConsole.apiError("api_banner.php", e.message ?: "Unknown")
                 e.printStackTrace()
             }
         }
     }
 
     private fun loadAnimeList(type: String?) {
+        val url = "api_anime_list.php" + (if (type != null) "?type=$type" else "")
+        DebugConsole.apiRequest(url)
         lifecycleScope.launch {
             try {
                 val res = repository.getAnimeList(type)
@@ -168,8 +182,10 @@ class HomeActivity : AppCompatActivity() {
 
                     binding.noResultsText.visibility =
                         if (animeList.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
+                    DebugConsole.apiSuccess(url + " (${list.size} items)")
                 }
             } catch (e: Exception) {
+                DebugConsole.apiError(url, e.message ?: "Unknown")
                 e.printStackTrace()
             }
         }
