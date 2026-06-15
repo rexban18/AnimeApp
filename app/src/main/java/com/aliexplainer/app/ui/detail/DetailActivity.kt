@@ -74,7 +74,7 @@ class DetailActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(this, "Failed to load details", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@DetailActivity, "Failed to load details", Toast.LENGTH_SHORT).show()
             }
         }
     }
